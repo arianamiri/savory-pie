@@ -1,5 +1,6 @@
 import unittest
 import json
+from datetime import datetime
 
 import mock
 from mock import Mock, patch
@@ -805,6 +806,27 @@ class ViewTest(unittest.TestCase):
 
         self.assertEqual(response['foo1'], 'bar1')
         self.assertEqual(response.content, '{"foo2": "bar2"}')
+
+    def test_set_expires(self):
+
+        expires = datetime(2005, 7, 14, 12, 30).isoformat('T')
+
+        def get(ctx, params):
+            ctx.set_expires_header(datetime.utcnow().isoformat('T'))
+            ctx.set_expires_header(expires)
+            ctx.set_expires_header(datetime.utcnow())
+            return {'foo2': 'bar2'}
+
+        root_resource = mock_resource(name='root')
+        root_resource.allowed_methods.add('GET')
+        root_resource.get = get
+
+        response = savory_dispatch(root_resource, method='GET')
+
+        self.assertEqual(response['Expires'], expires)
+        self.assertEqual(response.content, '{"foo2": "bar2"}')
+
+
 
 
 class HashTestCase(unittest.TestCase):

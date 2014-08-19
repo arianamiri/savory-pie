@@ -1,4 +1,5 @@
 import contextlib
+from dateutil import parser
 
 
 class APIContext(object):
@@ -74,6 +75,15 @@ class APIContext(object):
         """
         self.headers_dict[header] = value
         return self.headers_dict
+
+    def set_expires_header(self, new_expires):
+        current_expires = self.headers_dict.get('Expires', new_expires)
+
+        expires_date = min(
+            [current_expires, new_expires],
+            key=lambda expires: parser.parse(expires) if isinstance(expires, basestring) else expires
+        )
+        self.set_header('Expires', expires_date)
 
     @contextlib.contextmanager
     def target(self, target):
