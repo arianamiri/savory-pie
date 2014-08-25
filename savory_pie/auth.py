@@ -40,6 +40,42 @@ def subobject_auth_adapter(field, ctx, source_dict, target_obj):
     return name, source, target
 
 
+def uri_auth_adapter(field, ctx, source_dict, target_obj):
+    """
+    Adapter for fields of type savory_pie.fields.URIResourceField
+    """
+    name = field._compute_property(ctx)
+    source = source_dict.get(name, None)
+    target_field = getattr(target_obj, field.name, None)
+
+    if target_field:
+        target = ctx.build_resource_uri(field._resource_class(target_field))
+    else:
+        target = None
+
+    return name, source, target
+
+
+def urilist_auth_adapter(field, ctx, source_dict, target_obj):
+    """
+    Adapter for fields of type savory_pie.fields.URIListResourceField
+    """
+    name = field._compute_property(ctx)
+    source = source_dict.get(name, None)
+    target_field = getattr(target_obj, field.name, None)
+
+    if source:
+        source.sort()
+
+    if target_field:
+        target = sorted([ctx.build_resource_uri(field._resource_class(target_item))
+                         for target_item in target_field.all()])
+    else:
+        target = None
+
+    return name, source, target
+
+
 class authorization(object):
     """
     Authorization decorator, takes a permission dictionary key and an adapter function
