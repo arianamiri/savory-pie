@@ -67,6 +67,7 @@ Narrative documentation
    narr/validation
    narr/extending
    narr/django
+   narr/authorization
 
 API Documentation
 =================

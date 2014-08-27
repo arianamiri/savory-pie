@@ -182,7 +182,7 @@ it to your url patterns.
 
 Adding Authorization
 ===============
-...
+See :ref: _narr_authorization
 
 GET, PUT, POST, DELETE
 ===============
